@@ -3,7 +3,7 @@ import useWebSocket from 'react-use-websocket';
 
 const SERVER_URL = window.location.hostname.includes("localhost")
   ? "ws://localhost:5022"
-  : "wss://blue.fly.dev";
+  : "wss://blue-api-prod.fly.dev";
 
 // Parse binary snapshot from server's SerializeSnapshotBinary format
 function parseBinarySnapshot(data) {
@@ -216,7 +216,7 @@ export function useUdpConnection(token, playerId) {
       // Send HELLO message with ticket
       const sendHello = async () => {
         try {
-          const response = await fetch(`${window.location.hostname.includes("localhost") ? "http://localhost:5022" : "https://blue.fly.dev"}/api/udp-ticket`, {
+          const response = await fetch(`${window.location.hostname.includes("localhost") ? "http://localhost:5022" : "https://blue-api-prod.fly.dev"}/api/udp-ticket`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
