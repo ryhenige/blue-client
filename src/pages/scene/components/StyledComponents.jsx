@@ -1,0 +1,14 @@
+import styled from "styled-components"
+
+// room page
+export const SceneContainer = styled.div`
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+`
