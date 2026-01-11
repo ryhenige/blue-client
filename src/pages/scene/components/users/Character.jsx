@@ -1,10 +1,9 @@
-
 import { useState } from 'react'
 import useKeyboardInput from '../../hooks/useKeyboardInput'
 import { useRef, useEffect } from 'react'
 
-export default function Player({ player, onPositionChange }) {
-  const { position, color } = player
+export default function Character({ character, onPositionChange }) {
+  const { position, color } = character
   const meshRef = useRef()
   const keyboardInput = useKeyboardInput()
   const [localPosition, setLocalPosition] = useState(position ? [position.x, position.y, position.z] : [0, 0, 0])
@@ -16,7 +15,7 @@ export default function Player({ player, onPositionChange }) {
     }
   }, [localPosition])
 
-  // Handle keyboard movement for current player
+  // Handle keyboard movement for current character
   useEffect(() => {
     const { w, a, s, d } = keyboardInput
 

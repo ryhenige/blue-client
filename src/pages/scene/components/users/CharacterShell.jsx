@@ -1,10 +1,9 @@
-
 import { useState } from 'react'
 import { useRef, useEffect } from 'react'
 import React from 'react'
 
-const PlayerShell = React.memo(function PlayerShell({ player }) {
-  const { position, color } = player
+const CharacterShell = React.memo(function CharacterShell({ character }) {
+  const { position, color } = character
   const meshRef = useRef()
   const [localPosition, setLocalPosition] = useState(position ? [position.x, position.y, position.z] : [0, 0, 0])
   
@@ -32,4 +31,4 @@ const PlayerShell = React.memo(function PlayerShell({ player }) {
   );
 })
 
-export default PlayerShell
+export default CharacterShell

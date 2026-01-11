@@ -7,11 +7,11 @@ import World from './components/World'
 import Status from './components/ui/Status'
 import Logout from './components/ui/Logout'
 
-export default function Scene({ token, playerId: initialPlayerId, onLogout }) {
+export default function Scene({ token, character, onBackToCharacterSelect }) {
   useDocumentTitle('Blue')
-  const { connected: udpConnected, snapshot, sendPosition, disconnect: udpDisconnect, playerId: serverPlayerId } = useUdpConnection(token, initialPlayerId)
+  const { connected: udpConnected, snapshot, sendPosition, disconnect: udpDisconnect, characterId: serverCharacterId } = useUdpConnection(token, character)
 
-  const currentPlayer = useMemo(() => snapshot?.players?.find(player => player.id === serverPlayerId), [snapshot, serverPlayerId])
+  const currentPlayer = useMemo(() => snapshot?.characters?.find(character => character.id === serverCharacterId), [snapshot, serverCharacterId])
 
   const handlePlayerPositionChange = (position) => {
     const [x, y, z] = position
@@ -22,13 +22,12 @@ export default function Scene({ token, playerId: initialPlayerId, onLogout }) {
     <SceneContainer>
       <Status 
         token={token}
-        currentPlayer={currentPlayer}
-        udpConnected={udpConnected}
+        character={character}
         snapshot={snapshot}
-        messages={[]}
+        udpConnected={udpConnected}
       />
       <Logout 
-        onLogout={onLogout}
+        onBackToCharacterSelect={onBackToCharacterSelect}
         udpDisconnect={udpDisconnect}
         wsDisconnect={() => {}}
       />
@@ -39,6 +38,7 @@ export default function Scene({ token, playerId: initialPlayerId, onLogout }) {
         <World 
           snapshot={snapshot} 
           currentPlayer={currentPlayer}
+          character={character}
           onPlayerPositionChange={handlePlayerPositionChange} 
         />
       </Canvas>

@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 
-const LogoutButton = styled.button`
+const BackButton = styled.button`
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(76, 175, 80, 0.8);
+  border: none;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 25px;
@@ -14,20 +14,31 @@ const LogoutButton = styled.button`
   z-index: 1000;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(76, 175, 80, 1);
   }
 `
 
-export default function Logout({ onLogout, udpDisconnect, wsDisconnect }) {
-  const handleLogout = () => {
+const ButtonContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+`
+
+export default function Logout({ onBackToCharacterSelect, udpDisconnect, wsDisconnect }) {
+  const handleBackToCharacterSelect = () => {
     wsDisconnect()
     udpDisconnect()
-    onLogout()
+    onBackToCharacterSelect()
   }
 
   return (
-    <LogoutButton onClick={handleLogout}>
-    Logout
-    </LogoutButton>
+    <ButtonContainer>
+      <BackButton onClick={handleBackToCharacterSelect}>
+        Characters
+      </BackButton>
+    </ButtonContainer>
   )
 }

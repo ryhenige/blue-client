@@ -30,13 +30,13 @@ function parseBinarySnapshot(data) {
     const tickNumber = Number(readInt64(data.buffer, data.byteOffset + offset));
     offset += 8;
     
-    const playerCount = readInt32(data.buffer, data.byteOffset + offset);
+    const characterCount = readInt32(data.buffer, data.byteOffset + offset);
     offset += 4;
     
-    const players = [];
+    const characters = [];
     
-    for (let i = 0; i < playerCount; i++) {
-      // Read player ID
+    for (let i = 0; i < characterCount; i++) {
+      // Read character ID
       const idLength = readInt32(data.buffer, data.byteOffset + offset);
       offset += 4;
       const idBytes = new Uint8Array(data.buffer, data.byteOffset + offset, idLength);
@@ -64,7 +64,7 @@ function parseBinarySnapshot(data) {
       const lastUpdate = Number(readInt64(data.buffer, data.byteOffset + offset));
       offset += 8;
       
-      players.push({
+      characters.push({
         id: playerId,
         position: { x, y, z, rotationY },
         color,
@@ -74,7 +74,7 @@ function parseBinarySnapshot(data) {
     
     return {
       tickNumber,
-      players
+      characters
     };
   } catch (error) {
     console.error('Error parsing binary snapshot:', error);
@@ -85,10 +85,10 @@ function parseBinarySnapshot(data) {
 // Global connection cache to prevent duplicate connections
 const connectionCache = new Map();
 
-export function useUdpConnection(token, playerId) {
+export function useUdpConnection(token, character) {
   const [tickNumber, setTickNumber] = useState(0);
   const [snapshot, setSnapshot] = useState(null);
-  const [serverPlayerId, setServerPlayerId] = useState(null);
+  const [serverCharacterId, setServerCharacterId] = useState(null);
   const lastMessageRef = useRef(null);
   const instanceId = useRef(Math.random().toString(36).substr(2, 9));
 
@@ -99,33 +99,33 @@ export function useUdpConnection(token, playerId) {
     return url
   }, [token])
 
-  // Check if we already have a connection for this playerId
-  const existingConnection = connectionCache.get(serverPlayerId)
+  // Check if we already have a connection for this characterId
+  const existingConnection = connectionCache.get(serverCharacterId)
   
   // Always create connection if we don't have one, never pass null to close it
   const shouldCreateConnection = webSocketUrl && !existingConnection
   const shouldMaintainConnection = existingConnection && webSocketUrl
 
   // Use WebSocket for UDP proxy since WebRTC requires complex signaling
-  const { sendJsonMessage, lastBinaryMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
+  const { sendJsonMessage, lastBinaryMessage, readyState, getWebSocket } = useWebSocket(
     shouldCreateConnection ? webSocketUrl : (shouldMaintainConnection ? webSocketUrl : null),
     {
       shouldReconnect: () => true,
       onOpen: () => {
-        if (serverPlayerId && !connectionCache.has(serverPlayerId)) {
-          connectionCache.set(serverPlayerId, true);
+        if (serverCharacterId && !connectionCache.has(serverCharacterId)) {
+          connectionCache.set(serverCharacterId, true);
         }
       },
       onClose: (event) => {
         // Don't immediately remove from cache, let it timeout
         setTimeout(() => {
-          if (connectionCache.get(serverPlayerId) === true) {
-            connectionCache.delete(serverPlayerId);
+          if (connectionCache.get(serverCharacterId) === true) {
+            connectionCache.delete(serverCharacterId);
           }
         }, 5000);
       },
       onError: (event) => {
-        console.log(`[${instanceId.current}] WebSocket ERROR for serverPlayerId:`, serverPlayerId, event);
+        console.log(`[${instanceId.current}] WebSocket ERROR for serverCharacterId:`, serverCharacterId, event);
       },
       onMessage: (event) => {
         
@@ -147,7 +147,7 @@ export function useUdpConnection(token, playerId) {
                 setTickNumber(welcome.tickNumber);
                 // Store the server-generated playerId
                 if (welcome.playerId) {
-                  setServerPlayerId(welcome.playerId);
+                  setServerCharacterId(welcome.playerId);
                 }
               } else if (messageType === 3) { // Snapshot message (binary format)
                 const snapshot = parseBinarySnapshot(messageData);
@@ -192,7 +192,7 @@ export function useUdpConnection(token, playerId) {
           setTickNumber(welcome.tickNumber);
           // Store the server-generated playerId
           if (welcome.playerId) {
-            setServerPlayerId(welcome.playerId);
+            setServerCharacterId(welcome.playerId);
           }
         } else if (messageType === 3) { // Snapshot message (binary format)
           const snapshot = parseBinarySnapshot(messageData);
@@ -234,7 +234,7 @@ export function useUdpConnection(token, playerId) {
               return;
             }
             
-            const helloMessage = JSON.stringify({ ticket: ticketId });
+            const helloMessage = JSON.stringify({ ticket: ticketId, characterId: character?.id });
             const messageBytes = new TextEncoder().encode(helloMessage);
             const packet = new Uint8Array(messageBytes.length + 1);
             packet[0] = 1; // HELLO message type
@@ -280,7 +280,6 @@ export function useUdpConnection(token, playerId) {
       const websocket = getWebSocket();
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.send(packet);
-        console.log('Sent position via UDP proxy:', { x, y, z, rotationY });
       }
     } catch (error) {
       console.error('Error sending position via UDP proxy:', error);
@@ -294,5 +293,5 @@ export function useUdpConnection(token, playerId) {
     }
   };
 
-  return { connected, tickNumber, snapshot, sendPosition, disconnect, playerId: serverPlayerId };
+  return { connected, tickNumber, snapshot, sendPosition, disconnect, characterId: serverCharacterId };
 }

@@ -1,29 +1,29 @@
 import { useMemo } from 'react'
 import { Stars } from '@react-three/drei'
 
-import Player from './users/Player'
-import PlayerShell from './users/PlayerShell'
+import Character from './users/Character'
+import CharacterShell from './users/CharacterShell'
 
 export default function World({ snapshot = [], currentPlayer, onPlayerPositionChange }) {
 
-  const players = useMemo(() => snapshot?.players || [], [snapshot])
+  const characters = useMemo(() => snapshot?.characters || [], [snapshot])
   
   return (
     <>
       <Stars radius={300} depth={60} count={5000} factor={4} saturation={0} fade />
-      {players?.map((player) => {
-        if(player.id === currentPlayer?.id){
+      {characters?.map((character) => {
+        if(character.id === currentPlayer?.id){
           return (
-            <Player 
-              key={player.id} 
-              player={player}
+            <Character 
+              key={character.id} 
+              character={character}
               onPositionChange={onPlayerPositionChange} />
           )
         } else {
           return (
-            <PlayerShell 
-              key={player.id} 
-              player={player} />
+            <CharacterShell 
+              key={character.id} 
+              character={character} />
           )
         }
       })}

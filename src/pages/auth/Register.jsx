@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from './hooks/useAuth';
 
-const LoginContainer = styled.div`
+const RegisterContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,7 +13,7 @@ const LoginContainer = styled.div`
   font-family: Arial, sans-serif;
 `;
 
-const LoginCard = styled.div`
+const RegisterCard = styled.div`
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 20px;
@@ -125,11 +125,12 @@ const LoadingSpinner = styled.div`
   }
 `;
 
-export default function Login({ onLoginSuccess, onSwitchToRegister }) {
-  const { login, loading, error } = useAuth();
+export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
+  const { register, loading, error } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
 
   const handleChange = (e) => {
@@ -142,19 +143,27 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (formData.password !== formData.confirmPassword) {
+      return;
+    }
+    
+    if (formData.password.length < 4) {
+      return;
+    }
+
     try {
-      const result = await login(formData.email, formData.password);
-      onLoginSuccess(result);
+      const result = await register(formData.email, formData.password);
+      onRegisterSuccess(result);
     } catch (err) {
       // Error is handled by useAuth hook
     }
   };
 
   return (
-    <LoginContainer>
-      <LoginCard>
-        <Title>Welcome Back</Title>
-        <Subtitle>Enter Blue World - the 3D multiplayer experience</Subtitle>
+    <RegisterContainer>
+      <RegisterCard>
+        <Title>Join Blue World</Title>
+        <Subtitle>Create your account to enter the 3D multiplayer experience</Subtitle>
         
         <Form onSubmit={handleSubmit}>
           <Input
@@ -174,21 +183,39 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength="4"
             disabled={loading}
           />
           
-          <Button type="submit" disabled={loading}>
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            minLength="4"
+            disabled={loading}
+          />
+          
+          <Button type="submit" disabled={loading || formData.password !== formData.confirmPassword}>
             {loading && <LoadingSpinner />}
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </Button>
         </Form>
         
         {error && <ErrorMessage>{error}</ErrorMessage>}
+        {formData.password !== formData.confirmPassword && formData.confirmPassword && (
+          <ErrorMessage>Passwords do not match</ErrorMessage>
+        )}
+        {formData.password && formData.password.length < 4 && (
+          <ErrorMessage>Password must be at least 4 characters</ErrorMessage>
+        )}
         
         <SwitchText>
-          Don't have an account? <a onClick={onSwitchToRegister}>Create one</a>
+          Already have an account? <a onClick={onSwitchToLogin}>Sign in</a>
         </SwitchText>
-      </LoginCard>
-    </LoginContainer>
+      </RegisterCard>
+    </RegisterContainer>
   );
 }

@@ -11,14 +11,14 @@ const StatusOverlay = styled.div`
   border-radius: 5px;
 `
 
-export default function Status({ currentPlayer, udpConnected, snapshot, messages }) {
-  // console.log(currentPlayer)
+export default function Status({ character, udpConnected, snapshot }) {
+  console.log(snapshot)
   return (
     <StatusOverlay>
-    <div>Player ID: {currentPlayer?.id}</div>
-    <div>Color: {currentPlayer?.color}</div>
+    <div>Name: {character?.name || 'Loading...'}</div>
+    <div>Color: {character?.color}</div>
     <div>UDP Connected: {udpConnected ? 'Yes' : 'No'}</div>
-    <div>Players: {snapshot?.players?.length || 0}</div>
+    <div>Characters: {snapshot?.characters?.length || 0}</div>
     </StatusOverlay>
   )
 }
