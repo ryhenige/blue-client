@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function useKeyboardInput() {
   const [keys, setKeys] = useState({
@@ -9,21 +9,24 @@ export default function useKeyboardInput() {
     space: false,
   })
 
-  const handleKeyDown = useCallback((e) => {
-    const key = e.key.toLowerCase()
-    if (key in keys) {
-      setKeys(prev => ({ ...prev, [key]: true }))
-    }
-  }, [keys])
-
-  const handleKeyUp = useCallback((e) => {
-    const key = e.key.toLowerCase()
-    if (key in keys) {
-      setKeys(prev => ({ ...prev, [key]: false }))
-    }
-  }, [keys])
+  const keysRef = useRef(keys)
+  keysRef.current = keys
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      const key = e.key.toLowerCase()
+      if (key in keysRef.current) {
+        setKeys(prev => ({ ...prev, [key]: true }))
+      }
+    }
+
+    const handleKeyUp = (e) => {
+      const key = e.key.toLowerCase()
+      if (key in keysRef.current) {
+        setKeys(prev => ({ ...prev, [key]: false }))
+      }
+    }
+
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
@@ -31,7 +34,7 @@ export default function useKeyboardInput() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [handleKeyDown, handleKeyUp])
+  }, [])
 
   return keys
 }

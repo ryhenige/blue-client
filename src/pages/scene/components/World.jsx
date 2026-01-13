@@ -1,27 +1,26 @@
 import { useMemo } from 'react'
-import { Stars } from '@react-three/drei'
 
-import Character from './users/Character'
-import CharacterShell from './users/CharacterShell'
+import CharacterSprite from './users/CharacterSprite'
+import CharacterShellSprite from './users/CharacterShellSprite'
 
-export default function World({ snapshot = [], currentPlayer, onPlayerPositionChange }) {
+export default function World({ snapshot = [], currentCharacterId, onPlayerPositionChange }) {
 
   const characters = useMemo(() => snapshot?.characters || [], [snapshot])
   
   return (
     <>
-      <Stars radius={300} depth={60} count={5000} factor={4} saturation={0} fade />
       {characters?.map((character) => {
-        if(character.id === currentPlayer?.id){
+        if(character.id === currentCharacterId){
           return (
-            <Character 
+            <CharacterSprite
               key={character.id} 
-              character={character}
-              onPositionChange={onPlayerPositionChange} />
+              currentPlayer={character}
+              onPositionChange={onPlayerPositionChange}
+            />
           )
         } else {
           return (
-            <CharacterShell 
+            <CharacterShellSprite 
               key={character.id} 
               character={character} />
           )

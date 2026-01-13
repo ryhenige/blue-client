@@ -9,10 +9,10 @@ const StatusOverlay = styled.div`
   background: rgba(0, 0, 0, 0.7);
   padding: 10px;
   border-radius: 5px;
+  z-index: 1000;
 `
 
 export default function Status({ character, udpConnected, snapshot }) {
-  console.log(snapshot)
   return (
     <StatusOverlay>
     <div>Name: {character?.name || 'Loading...'}</div>
