@@ -19,6 +19,8 @@ export default function Scene({ token, character, onBackToCharacterSelect }) {
     sendPosition(position)
   }
 
+  console.log(character)
+
   return (
     <SceneContainer>
       <Status 
@@ -35,6 +37,10 @@ export default function Scene({ token, character, onBackToCharacterSelect }) {
       
       <Application
        resizeTo={window}
+       antialias={false}
+       autoDensity={true}
+       resolution={window.devicePixelRatio}
+       sharedTicker={true}
       >
         <World 
           snapshot={snapshot}

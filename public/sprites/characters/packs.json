@@ -1,0 +1,25 @@
+{
+  "slots": ["bodies", "shoes", "shirts", "pants","eyes", "hair"],
+
+  "assets": {
+    "bodies": [
+      { "id": "bodies-1", "pack": "bodies_pack_01", "url": "/sprites/characters/bodies/bodies-1/bodies-1.json" }
+    ],
+    "shoes": [
+      { "id": "shoes-1", "pack": "shoes_pack_01", "url": "/sprites/characters/shoes/shoes-1/shoes-1.json" }
+    ],
+    "shirts": [
+      { "id": "shirts-1", "pack": "shirts_pack_01", "url": "/sprites/characters/shirts/shirts-1/shirts-1.json" }
+    ],
+    "pants": [
+      { "id": "pants-1", "pack": "pants_pack_01", "url": "/sprites/characters/pants/pants-1/pants-1.json" },
+      { "id": "pants-2", "pack": "pants_pack_01", "url": "/sprites/characters/pants/pants-2/pants-2.json" }
+    ],
+    "eyes": [
+      { "id": "eyes-1", "pack": "eyes_pack_01", "url": "/sprites/characters/eyes/eyes-1/eyes-1.json" }
+    ],
+    "hair": [
+      { "id": "hair-1", "pack": "hair_pack_01", "url": "/sprites/characters/hair/hair-1/hair-1.json" }
+    ]
+  }
+}

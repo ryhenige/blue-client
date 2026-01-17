@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
-
-const SERVER_URL = window.location.hostname.includes("localhost")
-  ? "ws://localhost:5022"
-  : "wss://blue-api-prod.fly.dev";
+import { WS_URL } from 'constants/api';
 
 // Parse binary snapshot from server's SerializeSnapshotBinary format
 function parseBinarySnapshot(data) {
@@ -112,7 +109,7 @@ export function useUdpConnection(token, character) {
 
   // Create a stable URL that doesn't change on re-renders
   const webSocketUrl = useMemo(() => {
-    return token ? `${SERVER_URL}/udp-proxy` : null;
+    return token ? `${WS_URL}/udp-proxy` : null;
   }, [token]);
 
   // Simple connection management - always connect if we have a URL

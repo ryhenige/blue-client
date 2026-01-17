@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const API_BASE = window.location.hostname.includes("localhost")
-  ? "http://localhost:5022"
-  : "https://blue-api-prod.fly.dev";
+import { ENDPOINTS } from 'constants/api';
 
 export function useAuth() {
   const [token, setToken] = useState(null);
@@ -45,7 +42,7 @@ export function useAuth() {
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/login`, {
+      const response = await fetch(ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +71,7 @@ export function useAuth() {
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/register`, {
+      const response = await fetch(ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
+import { ENDPOINTS } from 'constants/api';
 
-const API_BASE = window.location.hostname.includes("localhost")
-  ? "http://localhost:5022"
-  : "https://blue-api-prod.fly.dev";
-
-export function useCharacters(token) {
+export default function useCharacters(token) {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -16,7 +13,7 @@ export function useCharacters(token) {
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/characters`, {
+      const response = await fetch(ENDPOINTS.CHARACTERS, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -36,20 +33,27 @@ export function useCharacters(token) {
     }
   };
 
-  const createCharacter = async (name, color) => {
+  const createCharacter = async (name, color, spriteConfig = {}) => {
     if (!token) throw new Error('No authentication token');
 
     setLoading(true);
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/characters`, {
+      const requestBody = { name, color };
+      
+      // Add sprite configuration if provided
+      if (Object.keys(spriteConfig).length > 0) {
+        requestBody.spriteConfig = spriteConfig;
+      }
+      
+      const response = await fetch(ENDPOINTS.CHARACTERS, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, color }),
+        body: JSON.stringify(requestBody),
       });
       
       if (!response.ok) {
@@ -75,7 +79,7 @@ export function useCharacters(token) {
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/characters/${id}`, {
+      const response = await fetch(`${ENDPOINTS.CHARACTERS}/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -109,7 +113,7 @@ export function useCharacters(token) {
     setError(null);
     
     try {
-      const response = await fetch(`${API_BASE}/api/characters/${id}`, {
+      const response = await fetch(`${ENDPOINTS.CHARACTERS}/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

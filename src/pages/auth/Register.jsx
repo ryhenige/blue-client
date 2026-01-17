@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { COLORS } from "ui/colors";
 import { useAuth } from './hooks/useAuth';
+import Button from "pages/components/buttons";
+import Input from "pages/components/inputs";
+import Structure from "pages/components/structure";
 
 const RegisterContainer = styled.div`
   display: flex;
@@ -8,21 +13,9 @@ const RegisterContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: ${COLORS.background.main};
+  color: ${COLORS.text.primary};
   font-family: Arial, sans-serif;
-`;
-
-const RegisterCard = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 3rem;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 400px;
-  max-width: 90vw;
 `;
 
 const Title = styled.h1`
@@ -43,49 +36,6 @@ const Form = styled.form`
   gap: 1rem;
 `;
 
-const Input = styled.input`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 1rem;
-  font-size: 1rem;
-  border-radius: 10px;
-  outline: none;
-  transition: all 0.3s ease;
-  
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-  
-  &:focus {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.15);
-  }
-`;
-
-const Button = styled.button`
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  margin-top: 1rem;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
 
 const ErrorMessage = styled.div`
   color: #ff6b6b;
@@ -97,17 +47,7 @@ const ErrorMessage = styled.div`
 
 const SwitchText = styled.p`
   margin-top: 2rem;
-  opacity: 0.9;
-  
-  a {
-    color: white;
-    text-decoration: underline;
-    cursor: pointer;
-    
-    &:hover {
-      opacity: 0.8;
-    }
-  }
+  color: ${COLORS.text.secondary};
 `;
 
 const LoadingSpinner = styled.div`
@@ -125,7 +65,8 @@ const LoadingSpinner = styled.div`
   }
 `;
 
-export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
+export default function Register({ onRegisterSuccess }) {
+  const navigate = useNavigate()
   const { register, loading, error } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -161,12 +102,13 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
 
   return (
     <RegisterContainer>
-      <RegisterCard>
+      <Structure variant="card" style={{ textAlign: 'center', width: '400px', maxWidth: '90vw' }}>
         <Title>Join Blue World</Title>
         <Subtitle>Create your account to enter the 3D multiplayer experience</Subtitle>
         
         <Form onSubmit={handleSubmit}>
           <Input
+            variant="secondary"
             type="email"
             name="email"
             placeholder="Email"
@@ -177,6 +119,7 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
           />
           
           <Input
+            variant="secondary"
             type="password"
             name="password"
             placeholder="Password"
@@ -188,6 +131,7 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
           />
           
           <Input
+            variant="secondary"
             type="password"
             name="confirmPassword"
             placeholder="Confirm Password"
@@ -198,7 +142,7 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
             disabled={loading}
           />
           
-          <Button type="submit" disabled={loading || formData.password !== formData.confirmPassword}>
+          <Button theme="secondary" type="submit" disabled={loading || formData.password !== formData.confirmPassword}>
             {loading && <LoadingSpinner />}
             {loading ? 'Creating Account...' : 'Create Account'}
           </Button>
@@ -213,9 +157,9 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
         )}
         
         <SwitchText>
-          Already have an account? <a onClick={onSwitchToLogin}>Sign in</a>
+          Already have an account? <a onClick={() => navigate("/login")}>Sign in</a>
         </SwitchText>
-      </RegisterCard>
+      </Structure>
     </RegisterContainer>
   );
 }
