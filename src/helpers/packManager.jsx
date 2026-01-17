@@ -1,5 +1,5 @@
 import loadPack, { preloadPacks } from './loadPack'
-import config from 'public/sprites/characters/packs.json'
+import config from 'constants/packs/characters.json'
 
 class PackManager {
   constructor() {

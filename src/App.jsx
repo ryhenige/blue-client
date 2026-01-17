@@ -4,14 +4,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { COLORS } from "ui/colors";
 import { SIZES } from "ui/sizes";
 
-import Login from './pages/auth/Login'
-import Register from './pages/auth/Register'
-import CharacterSelect from './pages/character/CharacterSelect'
-import CharacterCreate from './pages/character/CharacterCreate'
-import Scene from './pages/scene/Scene'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import Storybook from './pages/admin/storybook/Storybook'
-import { useUser } from './hooks/useUser'
+import Login from 'pages/auth/Login'
+import Register from 'pages/auth/Register'
+import CharacterSelect from 'pages/character/CharacterSelect'
+import CharacterCreate from 'pages/character/CharacterCreate'
+import Scene from 'pages/scene/Scene'
+
+import Admin from 'pages/admin/Admin'
+import { useUser } from 'hooks/useUser'
 
 // Protected Route Component
 function ProtectedRoute({ children, isAuthenticated, user, requiredRole }) {
@@ -209,25 +209,15 @@ function AppContent() {
 
       {/* Admin Route - requires admin role */}
       <Route 
-        path="/admin" 
+        path="/admin/*" 
         element={
           <ProtectedRoute isAuthenticated={!!authData} user={user} requiredRole="isAdmin">
-            <AdminDashboard 
+            <Admin 
               token={authData?.token}
               user={user}
               onBackToCharacterSelect={() => navigate('/characters')}
               onLogout={handleLogout}
             />
-          </ProtectedRoute>
-        } 
-      />
-
-      {/* Storybook Route - requires admin role */}
-      <Route 
-        path="/storybook" 
-        element={
-          <ProtectedRoute isAuthenticated={!!authData} user={user} requiredRole="isAdmin">
-            <Storybook />
           </ProtectedRoute>
         } 
       />

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "ui/colors";
-import config from "/public/sprites/characters/packs.json";
+import config from "constants/packs/characters.json";
 import packManager from "../../helpers/packManager";
 import Preview from "./components/Preview";
 import useCharacters from "./hooks/useCharacters";
