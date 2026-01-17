@@ -133,8 +133,12 @@ export const ControlsPanel = styled.div`
   backdrop-filter: blur(10px);
   border: 1px solid ${COLORS.background.glass};
   border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: .5rem 1rem;
+  margin-bottom: 1rem;
+`
+
+export const ControlTitle = styled.h3`
+  margin-bottom: 1rem;
 `
 
 export const ControlGroup = styled.div`

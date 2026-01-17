@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Structure from "pages/components/structure"
 import { ComponentGrid, ComponentName, ControlGroup, ControlLabel, ControlCheckbox, 
-        ControlsPanel, ComponentPreview } from "pages/admin/components/styledComponents"
+        ControlsPanel, ComponentPreview, ControlTitle } from "pages/admin/components/styledComponents"
 import SideSelector from "pages/admin/components/SideSelector"
 
 // Import component files
@@ -143,10 +143,10 @@ export default function Storybook() {
     return (
       <>
         {/* Global Controls Panel */}
-        <ControlsPanel style={{ marginBottom: '30px' }}>
-          <h3>
+        <ControlsPanel>
+          <ControlTitle>
             Global Props Controls
-          </h3>
+          </ControlTitle>
           
           {Object.entries(category.props || {}).map(([propName, propConfig]) => {
             const isBoolean = propConfig.type === 'boolean';

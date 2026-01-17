@@ -20,6 +20,42 @@ const StatValue = styled.div`
   margin-bottom: 20px;
 `
 
+const Container = styled.div`
+  position: relative;
+  height: 100%;
+  width: 100%;
+`
+
+const Title = styled.h3`
+  color: ${COLORS.text.primary}; 
+  margin-top: 0; 
+  fontSize: 1.2rem, 
+  fontWeight: 600, 
+  display: flex, 
+  alignItems: center, 
+  gap: 0.5rem
+`
+
+const Description = styled.div`
+  color: ${COLORS.text.secondary}; 
+  lineHeight: 1.6
+`
+
+const Open = styled.div`
+  font-weight: 600;
+  margin-top: 15px; 
+  padding: 10px; 
+  background: rgba(108, 110, 204, 0.1); 
+  border-radius: 6px;
+  text-align: center;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+`
+
+
+
 export default function AdminHome() {
   const navigate = useNavigate()
   const [stats, setStats] = useState({
@@ -45,11 +81,11 @@ export default function AdminHome() {
   return (
     <AdminContent>
       <Structure variant="panel">
-        <h3 style={{ color: COLORS.text.primary, margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>👥 Total Users</h3>
-        <div style={{ color: COLORS.text.secondary, lineHeight: '1.6' }}>
+        <Title>👥 Total Users</Title>
+        <Description>
           Registered users in the system
           <StatValue>{stats.totalUsers}</StatValue>
-        </div>
+        </Description>
       </Structure>
 
       <Structure 
@@ -57,39 +93,31 @@ export default function AdminHome() {
         onClick={() => navigate('/admin/storybook')}
         style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
       >
-        <h3 style={{ color: COLORS.text.primary, margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📚 Component Storybook</h3>
-        <div style={{ color: COLORS.text.secondary, lineHeight: '1.6' }}>
-          View and test all UI components in an interactive gallery
-          <div style={{ 
-            marginTop: '15px', 
-            padding: '10px', 
-            background: 'rgba(108, 110, 204, 0.1)', 
-            borderRadius: '6px',
-            textAlign: 'center'
-          }}>
-            <strong>Open Storybook</strong>
-          </div>
-        </div>
+        <Container>
+          <Title>📚 Component Storybook</Title>
+          <Description>
+            View and test all UI components in an interactive gallery
+          </Description>
+          <Open>
+            Open Storybook
+          </Open>
+        </Container>
       </Structure>
 
       <Structure 
         variant="panel"
         onClick={() => navigate('/admin/maps')}
         style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
-      >
-        <h3 style={{ color: COLORS.text.primary, margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🗺️ Map Editor</h3>
-        <div style={{ color: COLORS.text.secondary, lineHeight: '1.6' }}>
-          Create and edit game maps using tilesets
-          <div style={{ 
-            marginTop: '15px', 
-            padding: '10px', 
-            background: 'rgba(108, 110, 204, 0.1)', 
-            borderRadius: '6px',
-            textAlign: 'center'
-          }}>
-            <strong>Open Map Editor</strong>
-          </div>
-        </div>
+      > 
+        <Container>
+          <Title>🗺️ Map Editor</Title>
+          <Description>
+            Create and edit game maps using tilesets
+          </Description>
+          <Open>
+            Open Map Editor
+          </Open>
+        </Container>
       </Structure>
     </AdminContent>
   )
