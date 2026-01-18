@@ -6,7 +6,7 @@ import { loadTilesetWithCache } from "helpers/cache/tilesetCache"
 /**
  * ChunkRenderer - Renders a single chunk using multiple tilesets
  */
-export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0 }, onTexturesReady }) {
+export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0 }, onTexturesReady, customMapData }) {
   const { app } = useApplication()
   const tilemapRef = useRef(null)
   const loadedTilesetsRef = useRef({})
@@ -34,8 +34,27 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
     return zonesConfig.default.zones[zoneId][0].chunks[chunkId].url
   }
 
-  // Load chunk data when zoneId/chunkId changes
+  // Load chunk data when zoneId/chunkId changes or customMapData is provided
   useEffect(() => {
+    if (customMapData) {
+      // Use custom map data for editor
+      setChunkData(customMapData)
+      
+      // Load all tilesets needed for this custom map
+      if (customMapData.tilesets) {
+        const loadedTilesets = {}
+        customMapData.tilesets.forEach((tilesetConfig, index) => {
+          const tilesetKey = `tileset_${index}`
+          loadedTilesets[tilesetKey] = {
+            ...tilesetConfig,
+            range: { min: tilesetConfig.min, max: tilesetConfig.max }
+          }
+        })
+        setTilesets(loadedTilesets)
+      }
+      return
+    }
+
     if (!zoneId || !chunkId) return
 
     const loadChunkData = async () => {
@@ -68,7 +87,7 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
     }
 
     loadChunkData()
-  }, [zoneId, chunkId])
+  }, [zoneId, chunkId, customMapData])
 
   // Load tilesets when tilesets data is available
   useEffect(() => {

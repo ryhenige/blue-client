@@ -9,6 +9,7 @@ export default function SideSelector(
     title,
     descriptiveTitle,
     registry, 
+    buttons,
     children,
     onSelect
   }
@@ -18,6 +19,7 @@ export default function SideSelector(
   return (
     <Container>
       <Sidebar>
+        {buttons}
         <SidebarTitle>{title}</SidebarTitle>
         {Object.entries(registry).map(([key, category]) => (
           <ComponentTile

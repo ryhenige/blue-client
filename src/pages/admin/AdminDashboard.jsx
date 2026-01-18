@@ -106,16 +106,16 @@ export default function AdminHome() {
 
       <Structure 
         variant="panel"
-        onClick={() => navigate('/admin/maps')}
+        onClick={() => navigate('/admin/maps/viewer')}
         style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
       > 
         <Container>
-          <Title>🗺️ Map Editor</Title>
+          <Title>🗺️ Maps</Title>
           <Description>
-            Create and edit game maps using tilesets
+            Create and view game maps using tilesets
           </Description>
           <Open>
-            Open Map Editor
+            Open Maps
           </Open>
         </Container>
       </Structure>

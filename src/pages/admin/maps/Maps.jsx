@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SideSelector from "pages/admin/components/SideSelector"
 import MapSelector from "./components/MapSelector"
 import MapViewer from "./components/MapViewer"
 import zonesConfig from "constants/registry/zones.json"
+import Button from "pages/components/buttons"
 
 export default function Maps() {
+  const navigate = useNavigate()
   const [zoneRegistry, setZoneRegistry] = useState({})
   const [selectedZone, setSelectedZone] = useState(null)
   const [selectedChunk, setSelectedChunk] = useState(null)
@@ -55,10 +58,20 @@ export default function Maps() {
   
   return (
     <SideSelector
-      title="Zones"
-      descriptiveTitle="zone"
+      title="Maps"
+      descriptiveTitle="map"
       registry={zoneRegistry}
       onSelect={handleZoneSelect}
+      buttons={
+        <div style={{ marginBottom: "15px" }}>
+          <Button
+            onClick={() => navigate('/admin/maps/creator')}
+            theme="primary"
+            scale>
+            Create New Map
+          </Button>
+        </div>
+      }
     >
       {selectedZone && (
         <div>
