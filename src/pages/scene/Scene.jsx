@@ -19,8 +19,6 @@ export default function Scene({ token, character, onBackToCharacterSelect }) {
     sendPosition(position)
   }
 
-  console.log(character)
-
   return (
     <SceneContainer>
       <Status 

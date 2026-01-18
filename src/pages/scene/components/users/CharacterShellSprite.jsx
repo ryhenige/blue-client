@@ -1,47 +1,57 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
-import React from 'react'
-import {
-    Graphics,
-} from 'pixi.js'
+import React, { useEffect, useState } from 'react'
+import { useExtend } from "@pixi/react"
+import { Container, AnimatedSprite } from 'pixi.js'
+
+import { characterPackManager } from "helpers/managers/packManager"
 
 // Constants
 const SPRITE_SIZE = 50
 const SPRITE_MARGIN = SPRITE_SIZE / 2
+const animation = "idle-s"
 
 const CharacterShellSprite = React.memo(function CharacterShellSprite({ character }) {
-    const graphicsRef = useRef(null)
-    const [localPosition, setLocalPosition] = useState(character?.position || [0, 0, 0])
-    
-    // Update local position when server position changes
-    useEffect(() => {
-        if (character?.position && Array.isArray(character.position)) {
-            setLocalPosition([character.position[0], character.position[1], character.position[2] || 0])
-        }
-    }, [character?.position])
+  useExtend({ Container, AnimatedSprite })
 
-    const draw = useCallback((graphics) => {
-        graphics.clear();
-        graphics.beginFill(character?.color || 0x4287f5);
-        graphics.drawRect(-SPRITE_MARGIN, -SPRITE_MARGIN, SPRITE_SIZE, SPRITE_SIZE);
-        graphics.endFill();
-        
-        // Draw directional marker (triangle pointing right)
-        graphics.beginFill(0xffffff); // White marker
-        graphics.moveTo(SPRITE_MARGIN - 5, 0);
-        graphics.lineTo(SPRITE_MARGIN + 10, -5);
-        graphics.lineTo(SPRITE_MARGIN + 10, 5);
-        graphics.closePath();
-        graphics.endFill();
-    }, [character?.color])
+  const characterSelection = character?.appearance || [1,1,1,2,1,1]
+  const [currentAnimations, setCurrentAnimations] = useState(null)
+  const [currentResolved, setCurrentResolved] = useState(() => characterPackManager.getResolvedAssets(characterSelection))
 
-    return (
-        <pixiGraphics
-            ref={graphicsRef}
-            draw={draw}
-            x={localPosition[0]}
-            y={localPosition[1]}
-            rotation={localPosition[2]} />
-    );
+  useEffect(() => {
+    const loadCharacter = async () => {
+      const animations = await characterPackManager.loadSelection(characterSelection)
+      const resolved = characterPackManager.getResolvedAssets(characterSelection)
+      setCurrentAnimations(animations)
+      setCurrentResolved(resolved)
+    }
+
+    loadCharacter()
+  }, [characterSelection])
+
+  return (
+    <pixiContainer x={character?.position[0]} y={character?.position[1]}>
+      {currentAnimations &&
+        characterPackManager.config.order.map((slot) => {
+          const asset = currentResolved[slot]
+          if (!asset) return null
+
+          const tagName = `${asset.id}-${animation}`
+          const clip = currentAnimations[slot]?.[tagName]
+          if (!clip) return null
+
+          return (
+            <pixiAnimatedSprite
+              key={`${slot}-${asset.id}`}
+              textures={clip.frames}
+              ref={(ref) => {
+                ref?.play()
+              }}
+              anchor={0.5}
+              loop
+            />
+          )
+        })}
+    </pixiContainer>
+  )
 })
 
 export default CharacterShellSprite
