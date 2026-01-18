@@ -1,11 +1,10 @@
 import React, { useState } from "react"
+import { MAP_WIDTH, MAP_HEIGHT } from "constants/maps/maps"
 
 export default function VisualGridEditor({ 
   lastValidMapData, 
   gridWidth, 
   gridHeight, 
-  setGridWidth, 
-  setGridHeight, 
   copiedTileId,
   handleCellChange,
   handleGridSizeChange,
@@ -69,65 +68,21 @@ export default function VisualGridEditor({
           </div>
         </div>
         
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <label style={{ fontSize: "13px", color: "#6c757d", fontWeight: "500" }}>Width:</label>
-            <input
-              type="number"
-              value={gridWidth}
-              onChange={(e) => setGridWidth(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
-              style={{ 
-                width: "65px", 
-                padding: "6px 8px",
-                border: "1px solid #ced4da",
-                borderRadius: "4px",
-                fontSize: "13px",
-                textAlign: "center"
-              }}
-              min={1}
-              max={50}
-            />
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "12px",
+          padding: "8px 12px",
+          backgroundColor: "#e9ecef",
+          borderRadius: "6px",
+          border: "1px solid #ced4da"
+        }}>
+          <div style={{ fontSize: "13px", color: "#495057", fontWeight: "500" }}>
+            📐 Standard Chunk Size: {MAP_WIDTH}×{MAP_HEIGHT} tiles
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <label style={{ fontSize: "13px", color: "#6c757d", fontWeight: "500" }}>Height:</label>
-            <input
-              type="number"
-              value={gridHeight}
-              onChange={(e) => setGridHeight(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
-              style={{ 
-                width: "65px", 
-                padding: "6px 8px",
-                border: "1px solid #ced4da",
-                borderRadius: "4px",
-                fontSize: "13px",
-                textAlign: "center"
-              }}
-              min={1}
-              max={50}
-            />
+          <div style={{ fontSize: "12px", color: "#6c757d" }}>
+            ({MAP_WIDTH * 64}×{MAP_HEIGHT * 64}px)
           </div>
-          <button
-            onClick={handleGridSizeChange}
-            style={{
-              padding: "6px 14px",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: "500",
-              transition: "all 0.2s ease"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "#0056b3"
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "#007bff"
-            }}
-          >
-            Resize Grid
-          </button>
         </div>
       </div>
       

@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import { useApplication } from "@pixi/react"
 import { CompositeTilemap } from "@pixi/tilemap"
 import { loadTilesetWithCache } from "helpers/cache/tilesetCache"
+import { getChunkPosition } from "constants/maps/maps"
 
 /**
  * ChunkRenderer - Renders a single chunk using multiple tilesets
  */
-export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0 }, onTexturesReady, customMapData }) {
+export default function ChunkRenderer({ zoneId, chunkId, position={ x: 0, y: 0 }, onTexturesReady, customMapData, container, viewerMode }) {
   const { app } = useApplication()
   const tilemapRef = useRef(null)
   const loadedTilesetsRef = useRef({})
@@ -60,19 +61,14 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
     const loadChunkData = async () => {
       try {
         const chunkUrl = await getChunkUrl(zoneId, chunkId)
-        
-        // Load the chunk
         const response = await fetch(chunkUrl)
-        if (!response.ok) {
-          throw new Error(`Failed to load chunk ${chunkId}: ${response.status}`)
-        }
-        const chunkDataResponse = await response.json()
-        setChunkData(chunkDataResponse)
-
+        const data = await response.json()
+        setChunkData(data)
+        
         // Load all tilesets needed for this chunk
-        if (chunkDataResponse.tilesets) {
+        if (data.tilesets) {
           const loadedTilesets = {}
-          chunkDataResponse.tilesets.forEach((tilesetConfig, index) => {
+          data.tilesets.forEach((tilesetConfig, index) => {
             const tilesetKey = `tileset_${index}`
             loadedTilesets[tilesetKey] = {
               ...tilesetConfig,
@@ -81,8 +77,8 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
           })
           setTilesets(loadedTilesets)
         }
-      } catch (err) {
-        console.error('Failed to load chunk:', err)
+      } catch (error) {
+        console.error('Failed to load chunk data:', error)
       }
     }
 
@@ -135,17 +131,26 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
     }
   }, [app, chunkData, tilesets, onTexturesReady])
 
+  // Render chunk when everything is ready
   useEffect(() => {
     if (!isLoaded) return // Don't render until tilesets are loaded
     if (!app || !chunkData || Object.keys(loadedTilesetsRef.current).length === 0) return
 
+    // Calculate position automatically if not provided
+    // For viewer mode or custom map data, always position at 0,0
+    // For world rendering, use grid positioning
+    const chunkPosition = ((viewerMode || !!customMapData) ? position : getChunkPosition(chunkId))
+
     // Create the tilemap
     const tilemap = new CompositeTilemap()
     tilemapRef.current = tilemap
-    app.stage.addChild(tilemap)
+    
+    // Add to the provided container or app stage
+    const targetContainer = container || app.stage
+    targetContainer.addChild(tilemap)
 
     // Position the chunk
-    tilemap.position.set(position.x, position.y)
+    tilemap.position.set(chunkPosition.x, chunkPosition.y)
 
     // Render the chunk
     const { map } = chunkData
@@ -169,13 +174,16 @@ export default function ChunkRenderer({ zoneId, chunkId, position = { x: 0, y: 0
 
     // Cleanup
     return () => {
-      if (tilemapRef.current && app?.stage) {
-        app.stage.removeChild(tilemapRef.current)
+      if (tilemapRef.current) {
+        const targetContainer = container || app.stage
+        if (targetContainer?.removeChild) {
+          targetContainer.removeChild(tilemapRef.current)
+        }
         tilemapRef.current.destroy()
         tilemapRef.current = null
       }
     }
-  }, [app, chunkData, tilesets, position])
+  }, [app, chunkData, isLoaded, position, container, zoneId, chunkId, customMapData])
 
   return null
 }

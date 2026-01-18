@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react"
 import { loadTilesetWithCache } from "helpers/cache/tilesetCache"
+import { MAP_WIDTH, MAP_HEIGHT } from "constants/maps/maps"
 
 export function useMapCreator() {
   const [mapJson, setMapJson] = useState("")
@@ -8,9 +9,11 @@ export function useMapCreator() {
   const [selectedTilesets, setSelectedTilesets] = useState([])
   const [lastValidMapData, setLastValidMapData] = useState(null)
   const [loadedTilesets, setLoadedTilesets] = useState({})
-  const [gridWidth, setGridWidth] = useState(10)
-  const [gridHeight, setGridHeight] = useState(8)
   const [copiedTileId, setCopiedTileId] = useState(null)
+
+  // Use standardized chunk dimensions
+  const gridWidth = MAP_WIDTH
+  const gridHeight = MAP_HEIGHT
 
   // Available tilesets - you can expand this list
   const availableTilesets = [
@@ -190,41 +193,8 @@ export function useMapCreator() {
   }
 
   const handleGridSizeChange = () => {
-    const currentMap = lastValidMapData.map
-    const newMap = Array(gridHeight).fill(null).map((_, rowIndex) => 
-      Array(gridWidth).fill(0).map((_, colIndex) => {
-        // Preserve existing tiles if they exist
-        if (rowIndex < currentMap.length && colIndex < currentMap[rowIndex].length) {
-          return currentMap[rowIndex][colIndex]
-        }
-        return 0
-      })
-    )
-    
-    const newMapData = { w: gridWidth, h: gridHeight, map: newMap }
-    
-    const fullMapData = {
-      w: gridWidth,
-      h: gridHeight,
-      tilesets: selectedTilesets.map(ts => {
-        const { min, max } = getTilesetRange(ts.id)
-        return {
-          min: min,
-          max: max,
-          url: ts.url
-        }
-      }),
-      map: newMap
-    }
-    
-    setMapData(fullMapData)
-    setLastValidMapData(fullMapData)
-    
-    const formattedJson = newMap.map((row, index) => {
-      const rowStr = `  ${JSON.stringify(row)}`
-      return index < newMap.length - 1 ? `${rowStr},` : rowStr
-    }).join('\n')
-    setMapJson(`[\n${formattedJson}\n]`)
+    // Grid size is now standardized - no resizing allowed
+    console.log("Grid size is standardized to 20x15 tiles")
   }
 
   const getTileForId = (tileId) => {
@@ -302,9 +272,11 @@ export function useMapCreator() {
       // Load template data
       const { w, h, map, tilesets: templateTilesets } = templateData
       
-      // Update grid dimensions
-      setGridWidth(w)
-      setGridHeight(h)
+      // Validate that template matches standard dimensions
+      if (w !== MAP_WIDTH || h !== MAP_HEIGHT) {
+        alert(`Template dimensions (${w}×${h}) don't match standard chunk size (${MAP_WIDTH}×${MAP_HEIGHT})`)
+        return
+      }
       
       // Find and select the tilesets used in this template
       const templateUrls = templateTilesets.map(ts => ts.url)
@@ -356,8 +328,6 @@ export function useMapCreator() {
     setMapJson,
     setError,
     setSelectedTilesets,
-    setGridWidth,
-    setGridHeight,
     setCopiedTileId,
     
     // Handlers

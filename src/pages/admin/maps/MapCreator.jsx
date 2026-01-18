@@ -103,8 +103,6 @@ export default function MapCreator() {
           lastValidMapData={lastValidMapData}
           gridWidth={gridWidth}
           gridHeight={gridHeight}
-          setGridWidth={setGridWidth}
-          setGridHeight={setGridHeight}
           copiedTileId={copiedTileId}
           handleCellChange={handleCellChange}
           handleGridSizeChange={handleGridSizeChange}
