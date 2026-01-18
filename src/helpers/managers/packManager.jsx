@@ -1,8 +1,18 @@
-import loadPack, { preloadPacks } from './loadPack'
-import config from 'constants/packs/characters.json'
+import loadPack, { preloadPacks } from 'helpers/loaders/loadPack'
+
+import characterConfig from 'constants/registry/characters.json'
+
+const getConfig = (type) => {
+  const configs = {
+    characters: characterConfig
+  }
+  return configs[type]
+}
 
 class PackManager {
-  constructor() {
+  constructor(type) {
+    this.type = type
+    this.config = getConfig(type)
     this.loadedPacks = new Map()
     this.assetLookup = new Map() // asset.id -> { packName, assetData }
     this.buildLookup()
@@ -10,7 +20,7 @@ class PackManager {
 
   // Build fast lookup table for assets
   buildLookup() {
-    Object.entries(config.assets).forEach(([slot, assets]) => {
+    Object.entries(this.config.assets).forEach(([slot, assets]) => {
       assets.forEach(asset => {
         this.assetLookup.set(asset.id, {
           slot,
@@ -47,10 +57,10 @@ class PackManager {
     const assetIds = []
 
     // Determine which packs are needed
-    config.slots.forEach((slot, index) => {
+    this.config.order.forEach((slot, index) => {
       const chosen = selection?.[index]
       if (chosen) {
-        const assets = config.assets[slot] || []
+        const assets = this.config.assets[slot] || []
         const asset = assets[chosen - 1]
         if (asset) {
           assetIds.push(asset.id)
@@ -75,10 +85,10 @@ class PackManager {
 
     // Extract animations for the specific selection
     const animations = {}
-    config.slots.forEach((slot, index) => {
+    this.config.order.forEach((slot, index) => {
       const chosen = selection?.[index]
       if (chosen) {
-        const assets = config.assets[slot] || []
+        const assets = this.config.assets[slot] || []
         const asset = assets[chosen - 1]
         if (asset) {
           const packData = this.loadedPacks.get(asset.pack)
@@ -95,7 +105,7 @@ class PackManager {
   // Get all assets in a pack
   getPackAssets(packName) {
     const packAssets = []
-    Object.values(config.assets).flat().forEach(asset => {
+    Object.values(this.config.assets).flat().forEach(asset => {
       if (asset.pack === packName) {
         packAssets.push(asset)
       }
@@ -106,7 +116,7 @@ class PackManager {
   // Preload all packs (for startup)
   async preloadAllPacks() {
     const allPackNames = new Set()
-    Object.values(config.assets).flat().forEach(asset => {
+    Object.values(this.config.assets).flat().forEach(asset => {
       allPackNames.add(asset.pack)
     })
 
@@ -118,13 +128,13 @@ class PackManager {
     return preloadPacks(packConfigs)
   }
 
-  // Get resolved character data
+  // Get resolved data
   getResolvedAssets(selection) {
     const resolved = {}
-    config.slots.forEach((slot, i) => {
-      const items = config.assets[slot] || []
+    this.config.order.forEach((asset, i) => {
+      const items = this.config.assets[asset] || []
       const chosen = selection?.[i]
-      resolved[slot] = chosen ? items[chosen - 1] ?? null : null
+      resolved[asset] = chosen ? items[chosen - 1] ?? null : null
     })
     return resolved
   }
@@ -135,6 +145,8 @@ class PackManager {
   }
 }
 
-// Export singleton instance
-export const packManager = new PackManager()
-export default packManager
+// Export factory function to create dynamic instances
+export const createPackManager = (type) => new PackManager(type)
+
+// Export singleton instances for common types
+export const characterPackManager = new PackManager('characters')

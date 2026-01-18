@@ -1,5 +1,5 @@
 {
-  "slots": ["bodies", "shoes", "shirts", "pants","eyes", "hair"],
+  "order": ["bodies", "shoes", "shirts", "pants","eyes", "hair"],
 
   "assets": {
     "bodies": [

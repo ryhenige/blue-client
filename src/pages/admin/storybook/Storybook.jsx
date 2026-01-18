@@ -208,7 +208,7 @@ export default function Storybook() {
       title="Storybook"
       descriptiveTitle="component"
       registry={COMPONENT_REGISTRY}
-      onSelect={(s) => setSelected(s)}
+      onSelect={setSelected}
     >
       {selected ? renderSelectedCategory() : null}
     </SideSelector>

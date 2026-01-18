@@ -1,18 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Application, useExtend } from "@pixi/react";
 import { Container, AnimatedSprite } from "pixi.js";
-import { drawOrder } from "constants/characters";
 import { SIZES } from "ui/sizes";
 
-import packManager from "helpers/packManager";
+import { characterPackManager } from "helpers/managers/packManager";
 
 export default function Preview({ selection, animation = "idle-s" }) {
   useExtend({ Container, AnimatedSprite });
 
-  const layerOrder = drawOrder;
-
   // What is currently rendered (stable during loading)
-  const [currentResolved, setCurrentResolved] = useState(() => packManager.getResolvedAssets(selection));
+  const [currentResolved, setCurrentResolved] = useState(() => characterPackManager.getResolvedAssets(selection));
   const [currentAnimations, setCurrentAnimations] = useState(null);
 
   // Track if we’re in the middle of loading a new selection (optional styling)
@@ -24,7 +21,6 @@ export default function Preview({ selection, animation = "idle-s" }) {
   // Prevent out-of-order loads from “winning” (e.g. user clicks fast)
   const loadTokenRef = useRef(0);
 
-  console.log(selection)
   useEffect(() => {
     const token = ++loadTokenRef.current;
     let cancelled = false;
@@ -38,13 +34,13 @@ export default function Preview({ selection, animation = "idle-s" }) {
       });
 
       // Load using pack manager (pack-based loading)
-      const animations = await packManager.loadSelection(selection);
+      const animations = await characterPackManager.loadSelection(selection);
       
       // Check if cancelled
       if (cancelled || token !== loadTokenRef.current) return;
 
       // Atomic swap: prevents "naked for a moment"
-      const nextResolved = packManager.getResolvedAssets(selection);
+      const nextResolved = characterPackManager.getResolvedAssets(selection);
       setCurrentResolved(nextResolved);
       setCurrentAnimations(animations);
       setIsSwapping(false);
@@ -84,7 +80,7 @@ export default function Preview({ selection, animation = "idle-s" }) {
     >
       <pixiContainer x={100} y={100} alpha={isSwapping ? 0.5 : 1}>
         {currentAnimations &&
-          layerOrder.map((slot) => {
+          characterPackManager.config.order.map((slot) => {
             const asset = currentResolved[slot];
             if (!asset) return null;
 

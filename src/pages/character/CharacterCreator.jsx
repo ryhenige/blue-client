@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "ui/colors";
-import config from "constants/packs/characters.json";
-import packManager from "../../helpers/packManager";
+import { characterPackManager } from "helpers/managers/packManager";
 import Preview from "./components/Preview";
 import useCharacters from "./hooks/useCharacters";
 import Button from "pages/components/buttons";
@@ -36,21 +35,6 @@ const ErrorMessage = styled.div`
   padding: 0.5rem;
   border-radius: 8px;
   background: rgba(255, 107, 107, 0.1);
-`;
-
-const LoadingSpinner = styled.div`
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
 `;
 
 const PartSelector = styled.div`
@@ -139,9 +123,11 @@ const FalseBorder = styled.div`
   overflow: hidden;
   background: #6c6ecc;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 200px;
 `
 
-export default function CharacterCreate({ token, onCharacterSelect, onBackToCharacterSelect }) {
+export default function CharacterCreator({ token, onCharacterSelect, onBackToCharacterSelect }) {
   const navigate = useNavigate();
   const { createCharacter, loading, error } = useCharacters(token)
   const [formData, setFormData] = useState([1,1,1,1,1,1])
@@ -149,7 +135,7 @@ export default function CharacterCreate({ token, onCharacterSelect, onBackToChar
 
   // Optional: Preload all packs on component mount for instant switching
   useEffect(() => {
-    packManager.preloadAllPacks().catch(console.error)
+    characterPackManager.preloadAllPacks().catch(console.error)
   }, [])
 
   const handleCreateCharacter = async (e) => {
@@ -174,7 +160,7 @@ export default function CharacterCreate({ token, onCharacterSelect, onBackToChar
   }
 
   const renderPartOptions = (slotName, slotIndex) => {
-    const assets = config.assets[slotName] || []
+    const assets = characterPackManager.config.assets[slotName] || []
     
     return (
       <PartSection key={slotName}>
@@ -254,7 +240,7 @@ export default function CharacterCreate({ token, onCharacterSelect, onBackToChar
             </Column>
             <Column>
                 <Section>
-                  {config.slots.map((slotName, index) => renderPartOptions(slotName, index))}
+                  {characterPackManager.config.order.map((slotName, index) => renderPartOptions(slotName, index))}
                 </Section>
             </Column>
           </Row>

@@ -1,0 +1,18 @@
+{
+  "zones": {
+    
+    "overworld": [
+      { 
+        "id": "one", 
+        "chunks": {
+          "0,0": { 
+            "url": "/sprites/maps/configs/one.json"
+          },
+          "1,0": { 
+            "url": "/sprites/maps/configs/two.json"
+          }
+        }
+      }
+    ]
+  }
+}

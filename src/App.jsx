@@ -7,7 +7,7 @@ import { SIZES } from "ui/sizes";
 import Login from 'pages/auth/Login'
 import Register from 'pages/auth/Register'
 import CharacterSelect from 'pages/character/CharacterSelect'
-import CharacterCreate from 'pages/character/CharacterCreate'
+import CharacterCreator from 'pages/character/CharacterCreator'
 import Scene from 'pages/scene/Scene'
 
 import Admin from 'pages/admin/Admin'
@@ -180,7 +180,7 @@ function AppContent() {
         path="/character/create" 
         element={
           <ProtectedRoute isAuthenticated={!!authData} user={user}>
-            <CharacterCreate 
+            <CharacterCreator 
               token={authData?.token}
               user={user}
               onCharacterSelect={handleCharacterSelect}

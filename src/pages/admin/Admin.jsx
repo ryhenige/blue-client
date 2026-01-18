@@ -43,7 +43,7 @@ const AdminNav = styled.div`
 `
 
 const AdminContent = styled.div`
-  padding: 2rem;
+  ${props => props.$padded && `padding: 2rem`}
 `
 
 export default function Admin({ onLogout }) {
@@ -74,7 +74,7 @@ export default function Admin({ onLogout }) {
       </AdminHeader>
 
       {/* --------- ROUTES  ---------- */}
-      <AdminContent>
+      <AdminContent $padded={isAdminHome}>
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
           <Route path="/storybook" element={<Storybook />} />

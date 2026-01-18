@@ -4,22 +4,10 @@ import {
   Rectangle,
   TextureStyle
 } from "pixi.js"
+import { hasCachedPack, getCachedPack, setCachedPack } from "helpers/cache/packCache"
 
 // Pixi v8 global pixel-art scaling
 TextureStyle.defaultOptions.scaleMode = 'nearest'
-
-// Cache for entire packs
-const packCache = new Map()
-
-// Memory management: limit cache size
-const MAX_PACK_CACHE_SIZE = 50
-
-function cleanPackCache() {
-  if (packCache.size > MAX_PACK_CACHE_SIZE) {
-    const firstKey = packCache.keys().next().value
-    packCache.delete(firstKey)
-  }
-}
 
 /**
  * Load an entire pack of character assets
@@ -29,8 +17,8 @@ function cleanPackCache() {
  * }
  */
 export default async function loadPack(packName, packAssets) {
-  if (packCache.has(packName)) {
-    return packCache.get(packName)
+  if (hasCachedPack(packName)) {
+    return getCachedPack(packName)
   }
 
   const promise = (async () => {
@@ -77,6 +65,13 @@ export default async function loadPack(packName, packAssets) {
           }
         }
 
+        // For maps (no frameTags), include all frames as a default animation
+        if (Object.keys(animations).length === 0) {
+          animations.default = {
+            frames: timedFrames
+          }
+        }
+
         return {
           id: asset.id,
           animations
@@ -99,8 +94,7 @@ export default async function loadPack(packName, packAssets) {
     return packData
   })()
 
-  packCache.set(packName, promise)
-  cleanPackCache()
+  setCachedPack(packName, promise)
   return promise
 }
 
@@ -110,9 +104,4 @@ export async function preloadPacks(packConfigs) {
     loadPack(packName, assets)
   )
   return Promise.all(promises)
-}
-
-// Clear pack cache
-export function clearPackCache() {
-  packCache.clear()
 }
